@@ -25,6 +25,23 @@ async function logErrorToFile(operation, orderId, data, error) {
     }
 }
 
+async function handleOperationError(operation, orderId, data, error) {
+    const timestamp = new Date().toISOString();
+    const errorDetails = {
+        timestamp,
+        operation,
+        orderId,
+        failedData: data, 
+        error: {
+            message: error.message,
+            name: error.name,
+            stack: error.stack
+        }
+    };
+
+    console.error(`[FAILED_OPERATION] ${operation} for order ${orderId}:`, JSON.stringify(errorDetails, null, 2));
+}
+
 
 async function insert(orderId, orderData, status) {
     if (!orderId || !orderData) {
@@ -42,6 +59,7 @@ async function insert(orderId, orderData, status) {
         });
         return true; 
     } catch (error) {
+        await handleOperationError('insert', orderId, JSON.stringify(orderData), error); 
         await logErrorToFile('insert', orderId, JSON.stringify(orderData), error);
         return false; 
     }
@@ -62,6 +80,7 @@ async function update(orderId, updateData, status) {
         });
         return true; 
     } catch (error) {
+        await handleOperationError('update', orderId, JSON.stringify(updateData), error); 
         await logErrorToFile('update', orderId, JSON.stringify(updateData), error);
         return false; 
     } 
