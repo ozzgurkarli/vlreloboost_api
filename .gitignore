@@ -1,3 +1,4 @@
 .env
 vlr-eloboost-firebase-adminsdk-fbsvc-b797460423.json
 /node_modules
+utils/firestore_failures.log

@@ -16,7 +16,8 @@ router.post('/save-credentials', authenticateToken, async (req, res) => {
 
         const encryptedPassword = encrypt(riotPassword);
 
-        db.update(req.user.orderId, {riotId: riotId, encryptedPassword: encryptedPassword.content, passwordIV: encryptedPassword.iv}, 'credentials_received');
+        await db.update(req.user.orderId, {riotId: riotId, encryptedPassword: encryptedPassword.content, passwordIV: encryptedPassword.iv}, 'credentials_received');
+        res.status(200).json( {message: 'success'});
     } catch (error) {
         res.status(500).json({ message: 'Bilgiler kaydedilirken sunucuda bir hata oluştu.' });
     }
