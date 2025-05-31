@@ -37,7 +37,7 @@ router.post('/', async (req, res) => {
         };
 
         const authToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
-        const merchant_ok_url = `https://2a6a-159-146-81-195.ngrok-free.app/payment/payment-ok?order_id=${merchant_oid}&token=${authToken}`;
+        const merchant_ok_url = `${process.env.APP_URL}/payment/payment-ok?order_id=${merchant_oid}&token=${authToken}`;
         const merchant_fail_url = `${web_url}`;
 
         const hashSTR = `${merchant_id}${user_ip}${merchant_oid}${email}${payment_amount}${user_basket}00TL1`;
@@ -63,7 +63,7 @@ router.post('/', async (req, res) => {
         postData.append('currency', 'TL');
         postData.append('test_mode', '1');
 
-        const response = await axios.post('https://www.paytr.com/odeme/api/get-token', postData);
+        const response = await axios.post(`${process.env.PAYTR_URL}/odeme/api/get-token`, postData);
         
         const { status } = response.data;
 
