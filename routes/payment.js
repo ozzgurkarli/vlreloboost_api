@@ -12,7 +12,7 @@ const { v4: uuidv4 } = require('uuid');
 const merchant_id = process.env.PAYTR_MERCHANT_ID;
 const merchant_key = process.env.PAYTR_MERCHANT_KEY;
 const merchant_salt = process.env.PAYTR_MERCHANT_SALT;
-const app_url = process.env.APP_URL;
+const web_url = process.env.WEB_URL;
 
 router.post('/', async (req, res) => {
     try {
@@ -38,7 +38,7 @@ router.post('/', async (req, res) => {
 
         const authToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
         const merchant_ok_url = `https://2a6a-159-146-81-195.ngrok-free.app/payment/payment-ok?order_id=${merchant_oid}&token=${authToken}`;
-        const merchant_fail_url = `https://vlreloboost.online`;
+        const merchant_fail_url = `${web_url}`;
 
         const hashSTR = `${merchant_id}${user_ip}${merchant_oid}${email}${payment_amount}${user_basket}00TL1`;
         const paytr_token = crypto.createHmac('sha256', merchant_key).update(hashSTR + merchant_salt).digest('base64');
@@ -97,7 +97,7 @@ router.get('/payment-ok', async (req, res) => {
             maxAge: 3600000 
         });
 
-        res.redirect(`http://localhost:5500/siparis-basarili.html?order_id=${order_id}`); 
+        res.redirect(`${web_url}/siparis-basarili.html?order_id=${order_id}`); 
 
     } catch (error) {
     }

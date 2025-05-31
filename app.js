@@ -14,7 +14,7 @@ const app = express();
 
 app.use(cookieParser());
 
-const corsOptions = {origin: 'http://localhost:5500', credentials: true};
+const corsOptions = {origin: process.env.WEB_URL, credentials: true};
 app.use(cors(corsOptions)); 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
