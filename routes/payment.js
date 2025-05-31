@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
-const microtime = require('microtime');
 const axios = require('axios');
 const nodeBase64 = require('nodejs-base64-converter');
 const jwt = require('jsonwebtoken');
