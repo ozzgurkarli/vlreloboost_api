@@ -1,20 +1,41 @@
 const express = require("express");
-const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
-require('dotenv').config();
+require('dotenv').config(); 
+const cors = require('cors');
+const admin = require('firebase-admin');
+const serviceAccount = require('./vlr-eloboost-firebase-adminsdk-fbsvc-b797460423.json');
+const cookieParser = require('cookie-parser');
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+});
+const db = admin.firestore();
 
 const app = express();
-app.use(bodyParser.json());
 
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('MongoDB connected...'))
-    .catch(err => console.log(err));
+app.use(cookieParser());
 
-const userRoutes = require('./routes/user');
+const corsOptions = {origin: 'http://localhost:5500', credentials: true};
+app.use(cors(corsOptions)); 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use('/user', userRoutes);
+app.use(express.static('VlrEloBoost'));
+
+app.set('view engine', 'ejs');
+app.set('views', 'views');
+
+app.set('trust proxy', true);
+
+const paymentRoutes = require('./routes/payment');
+const credentialRoutes = require('./routes/credentials');
+
+app.use('/payment', paymentRoutes);
+app.use('/credentials', credentialRoutes);
+
+app.get('/', (req, res) => {
+    
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server ${PORT} portunda Ã§alÄ±ÅŸÄ±yor`);
 });
