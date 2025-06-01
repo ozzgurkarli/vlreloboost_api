@@ -119,7 +119,7 @@ router.post('/callback', (req, res) => {
     if (status === 'success' && payload !== undefined) {
         db.insertOrder(merchant_oid, payload, 'payment_success');
         tempStorage.del(payload);
-    } else if(status === 'failed' || payload !== undefined){
+    } else if(status === 'failed' && payload !== undefined){
         payload.failed_reason_code = failed_reason_code;
         payload.failed_reason_msg = failed_reason_msg;
         db.insertOrder(merchant_oid, payload, 'payment_failed');
