@@ -39,12 +39,20 @@ async function handleOperationError(operation, orderId, data, error) {
         }
     };
 
-    console.error(`[FAILED_OPERATION] ${operation} for order ${orderId}:`, JSON.stringify(errorDetails, null, 2));
+    console.error(`[FAILED_OPERATION] ${operation} for order ${orderId}:`, JSON.stringify(errorDetails, null, 2));  //renger logs
 }
 
+async function insertContact(data) {
+    if(!data){
+        return false;
+    }
 
-async function insert(orderId, orderData, status) {
-    if (!orderId || !orderData) {
+    data.sendAt = admin.firestore.FieldValue.serverTimestamp();
+    const contactDocRef = db.collection('contact').add(data);
+}
+
+async function insertOrder(orderId, orderData, status) {
+    if (!collection || !orderId || !orderData) {
         return false;
     }
 
@@ -59,8 +67,27 @@ async function insert(orderId, orderData, status) {
         });
         return true; 
     } catch (error) {
-        await handleOperationError('insert', orderId, JSON.stringify(orderData), error); 
-        await logErrorToFile('insert', orderId, JSON.stringify(orderData), error);
+        await handleOperationError('insertOrder', orderId, JSON.stringify(orderData), error); 
+        await logErrorToFile('insertOrder', orderId, JSON.stringify(orderData), error);
+        return false; 
+    }
+}
+
+async function get(orderId) {
+    if(!orderId){
+        return false;
+    }
+
+    const orderDocRef = db.collection('orders').doc(orderId);
+    try {
+        const orderSnapshot = await orderDocRef.get();
+
+        if (!orderSnapshot.exists) {
+            return null;
+        } else {
+            return orderSnapshot.data();
+        }
+    } catch (error) {
         return false; 
     }
 }
@@ -86,4 +113,4 @@ async function update(orderId, updateData, status) {
     } 
 }
 
-module.exports = { insert, update };
+module.exports = { insertOrder, insertContact, update, get };

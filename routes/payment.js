@@ -24,7 +24,8 @@ router.post('/', async (req, res) => {
             name,
             email,
             phone,
-            address
+            address,
+            notes
         } = req.body;
         
         const payload = {
@@ -32,12 +33,15 @@ router.post('/', async (req, res) => {
             name: name,
             email: email,
             phone: phone,
-            paymentAmount: payment_amount
+            paymentAmount: payment_amount,
+            notes: notes,
+            user_ip: user_ip,
+            service: JSON.parse(Buffer.from(user_basket, 'base64').toString('utf8'))[0][0]
         };
 
         const authToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
         const merchant_ok_url = `${process.env.APP_URL}/payment/payment-ok?order_id=${merchant_oid}&token=${authToken}`;
-        const merchant_fail_url = `${web_url}`;
+        const merchant_fail_url = `${web_url}/odeme-basarisiz.html`;
 
         const hashSTR = `${merchant_id}${user_ip}${merchant_oid}${email}${payment_amount}${user_basket}00TL1`;
         const paytr_token = crypto.createHmac('sha256', merchant_key).update(hashSTR + merchant_salt).digest('base64');
@@ -103,7 +107,7 @@ router.get('/payment-ok', async (req, res) => {
 });
 
 router.post('/callback', (req, res) => {
-    const { merchant_oid, status, total_amount, hash } = req.body;
+    const { merchant_oid, status, total_amount, failed_reason_code, failed_reason_msg, hash } = req.body;
 
     const generatedHash = crypto.createHmac('sha256', merchant_key).update(merchant_oid + merchant_salt + status + total_amount).digest('base64');
     if (hash !== generatedHash) {
@@ -113,10 +117,12 @@ router.post('/callback', (req, res) => {
     const payload = tempStorage.get(merchant_oid);
 
     if (status === 'success' && payload !== undefined) {
-        db.insert(merchant_oid, payload, 'payment_success');
+        db.insertOrder(merchant_oid, payload, 'payment_success');
         tempStorage.del(payload);
-    } else {
-        db.insert(merchant_oid, payload, 'payment_failed');
+    } else if(status === 'failed'){
+        payload.failed_reason_code = failed_reason_code;
+        payload.failed_reason_msg = failed_reason_msg;
+        db.insertOrder(merchant_oid, payload, 'payment_failed');
     }
 
     res.send('OK');
