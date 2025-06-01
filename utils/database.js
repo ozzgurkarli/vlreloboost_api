@@ -52,7 +52,7 @@ async function insertContact(data) {
 }
 
 async function insertOrder(orderId, orderData, status) {
-    if (!collection || !orderId || !orderData) {
+    if (!orderId || !orderData) {
         return false;
     }
 
