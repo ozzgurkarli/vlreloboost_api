@@ -28,9 +28,11 @@ app.set('trust proxy', true);
 
 const paymentRoutes = require('./routes/payment');
 const credentialRoutes = require('./routes/credentials');
+const notificationRoutes = require('./routes/notification');
 
 app.use('/payment', paymentRoutes);
 app.use('/credentials', credentialRoutes);
+app.use('/notification', notificationRoutes);
 
 app.get('/', (req, res) => {
     

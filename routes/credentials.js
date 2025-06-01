@@ -23,4 +23,28 @@ router.post('/save-credentials', authenticateToken, async (req, res) => {
     }
 });
 
+
+router.get('/track', async (req, res) => {
+    const { orderId } = req.query;
+
+    if (!orderId) {
+        return res.status(400).json({ status: 'failed', message: 'Lütfen bir sipariş numarası girin.' });
+    }
+
+    const orderData = await db.get(orderId);
+    orderData.currentRankName = 'Elmas Kademe 3';
+    orderData.currentLp = 55;
+    orderData.wins = 6;
+    orderData.losses = 2;
+
+    if (orderData === null) {
+        return res.status(404).json({ status: 'failed', message: 'Bu numaraya ait bir sipariş bulunamadı.' });
+    }
+    else if (orderData === false) {
+        return res.status(500).json({ status: 'failed', message: 'Sipariş durumu sorgulanırken bir sunucu hatası oluştu.' });
+    }
+
+    res.json({ status: 'success', data: orderData });
+});
+
 module.exports = router;
