@@ -24,7 +24,8 @@ router.post('/', async (req, res) => {
             name,
             email,
             phone,
-            address
+            address,
+            notes
         } = req.body;
         
         const payload = {
@@ -32,7 +33,8 @@ router.post('/', async (req, res) => {
             name: name,
             email: email,
             phone: phone,
-            paymentAmount: payment_amount
+            paymentAmount: payment_amount,
+            notes: notes
         };
 
         const authToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
