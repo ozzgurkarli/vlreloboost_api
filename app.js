@@ -4,6 +4,8 @@ const cors = require('cors');
 const admin = require('firebase-admin');
 const serviceAccount = require('./vlr-eloboost-firebase-adminsdk-fbsvc-b797460423.json');
 const cookieParser = require('cookie-parser');
+const rateLimit = require('express-rate-limit');
+
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
@@ -24,7 +26,16 @@ app.use(express.static('VlrEloBoost'));
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
-app.set('trust proxy', true);
+app.set('trust proxy', 1);
+
+const requestLimit = rateLimit({
+    windowMs: 5 * 60 * 1000,
+    max: 30,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: "Çok fazla istekte bulundunuz, 5 dakika boyunca yeni istekte bulunamazsınız."
+})
+app.use(requestLimit);
 
 const paymentRoutes = require('./routes/payment');
 const credentialRoutes = require('./routes/credentials');
