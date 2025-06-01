@@ -40,10 +40,12 @@ app.use(requestLimit);
 const paymentRoutes = require('./routes/payment');
 const credentialRoutes = require('./routes/credentials');
 const notificationRoutes = require('./routes/notification');
+const adminRoutes = require('./routes/admin');
 
 app.use('/payment', paymentRoutes);
 app.use('/credentials', credentialRoutes);
 app.use('/notification', notificationRoutes);
+app.use('/admin', adminRoutes);
 
 app.get('/', (req, res) => {
     
