@@ -25,6 +25,7 @@ router.post('/', async (req, res) => {
             email,
             phone,
             address,
+            agents,
             notes
         } = req.body;
         
@@ -35,6 +36,7 @@ router.post('/', async (req, res) => {
             phone: phone,
             paymentAmount: payment_amount,
             notes: notes,
+            agents: agents,
             user_ip: user_ip,
             service: JSON.parse(Buffer.from(user_basket, 'base64').toString('utf8'))[0][0]
         };
