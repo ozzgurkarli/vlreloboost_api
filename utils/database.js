@@ -49,6 +49,8 @@ async function insertContact(data) {
     }
 
     data.sendAt = admin.firestore.FieldValue.serverTimestamp();
+    data.testMode = process.env.TESTMODE;
+
     const contactDocRef = db.collection('contact').add(data);
 }
 
@@ -84,6 +86,7 @@ async function insertOrder(orderId, orderData, status) {
         await orderDocRef.set({
             ...orderData, 
             status: status, 
+            testMode: process.env.TESTMODE,
             createdAt: admin.firestore.FieldValue.serverTimestamp(), 
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
@@ -103,6 +106,7 @@ async function getWithStatus(status) {
     const orderCollRef = db.collection('orders');
     const querySnapshot = await orderCollRef
             .where('status', 'in', status)
+            .where('testmode', '==', process.env.TESTMODE)
             .get();
 
     if (querySnapshot.empty) {
