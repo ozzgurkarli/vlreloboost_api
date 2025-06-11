@@ -45,7 +45,7 @@ router.post('/', async (req, res) => {
         const merchant_ok_url = `${process.env.APP_URL}/payment/payment-ok?order_id=${merchant_oid}&token=${authToken}`;
         const merchant_fail_url = `${web_url}/odeme-basarisiz.html`;
 
-        const hashSTR = `${merchant_id}${user_ip}${merchant_oid}${email}${payment_amount}${user_basket}00TL1`;
+        const hashSTR = `${merchant_id}${user_ip}${merchant_oid}${email}${payment_amount}${user_basket}00TL${process.env.TEST_MODE}`;
         const paytr_token = crypto.createHmac('sha256', merchant_key).update(hashSTR + merchant_salt).digest('base64');
         
         const postData = new URLSearchParams();
@@ -66,7 +66,7 @@ router.post('/', async (req, res) => {
         postData.append('merchant_fail_url', merchant_fail_url);
         postData.append('timeout_limit', '30');
         postData.append('currency', 'TL');
-        postData.append('test_mode', '1');
+        postData.append('test_mode', process.env.TEST_MODE);
 
         const response = await axios.post(`${process.env.PAYTR_URL}/odeme/api/get-token`, postData);
         
