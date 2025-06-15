@@ -19,8 +19,17 @@ router.post('/contact', async (req, res) => {
     }
 });
 
+function sendMail(){
+    
+}
+
 async function handleOperationError(operation, data, error) {
     const timestamp = new Date().toISOString();
+
+    if(orderId === undefined){
+        orderId = "none";
+    }
+
     const errorDetails = {
         timestamp,
         operation,
